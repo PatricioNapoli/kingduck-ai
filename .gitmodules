@@ -1,0 +1,3 @@
+[submodule "battlefield-ia"]
+	path = battlefield-ia
+	url = https://gitlab.com/gmbarrera/battlefield-ia

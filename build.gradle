@@ -1,3 +1,10 @@
 apply plugin: 'idea'
 apply plugin: 'java'
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'battlefield-ia/src']
+        }
+    }
+}
