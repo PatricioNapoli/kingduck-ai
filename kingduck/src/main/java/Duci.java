@@ -34,7 +34,7 @@ public class Duci extends Warrior {
 		ArrayList<FieldCell> si = bf.getSpecialItems();
 		
 		
-		return new MovimientoDummy(this.getPosition(), 1, 2);
+		return new AStar(this.getPosition());
 	}
 
 	@Override

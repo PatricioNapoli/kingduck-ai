@@ -1,10 +1,16 @@
 apply plugin: 'idea'
-apply plugin: 'java'
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', 'battlefield-ia/src']
-        }
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+    }
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
     }
 }
