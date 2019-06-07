@@ -1,45 +1,31 @@
 import ia.battle.core.FieldCell;
 
+import java.util.List;
+
 public class Node implements Comparable<Node> {
     public boolean adjacenciesSet;
 
-    public float costFromRoot;
+    public float costFromRoot = Float.MAX_VALUE;
+    public float manhattan;
 
     public FieldCell cell;
 
     public Node parent;
 
-    public Node left;
-    public Node right;
-    public Node up;
-    public Node down;
+    public List<Node> adjacents;
 
-    public Node upLeft;
-    public Node upRight;
-    public Node downLeft;
-    public Node downRight;
-
-    public Node(float costFromRoot, FieldCell cell, Node parent) {
-        this.costFromRoot = costFromRoot;
+    public Node(float manhattan, FieldCell cell) {
+        this.manhattan = manhattan;
         this.cell = cell;
-        this.parent = parent;
     }
 
-    public void setAdjacencies(Node left, Node right, Node up, Node down, Node upLeft, Node upRight, Node downLeft, Node downRight) {
-        this.left = left;
-        this.right = right;
-        this.up = up;
-        this.down = down;
-        this.upLeft = upLeft;
-        this.upRight = upRight;
-        this.downLeft = downLeft;
-        this.downRight = downRight;
-
+    public void setAdjacency(List<Node> adjacents) {
+        this.adjacents = adjacents;
         adjacenciesSet = true;
     }
 
     @Override
     public int compareTo(Node o) {
-        return Float.compare(o.costFromRoot, costFromRoot);
+        return Float.compare(costFromRoot + manhattan, o.costFromRoot + o.manhattan);
     }
 }

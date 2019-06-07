@@ -13,9 +13,8 @@ public class KingDuci extends WarriorManager {
 	@Override
 	public Warrior getNextWarrior() throws RuleException {
 		int maxPoints = ConfigurationManager.getInstance().getMaxPointsPerWarrior();
-		
-		
-		return new Duci("Duci", 10, 10, 10, 10, 10);
+
+		return new Duci("Duci", 50, 25, 25, 50, 50);
 	}
 
 }

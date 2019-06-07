@@ -9,79 +9,80 @@ import ia.battle.core.actions.Move;
 public class AStar extends Move {
 
 	private FieldCell from;
-	private int toX;
-	private int toY;
+	private FieldCell to;
 
-	public AStar(FieldCell from, int toX, int toY) {
+	public AStar(FieldCell from, FieldCell to) {
 		this.from = from;
+		this.to = to;
 	}
 	
 	@Override
 	public ArrayList<FieldCell> move() {
-		int x = from.getX();
-		int y = from.getY();
-
-		ArrayList<FieldCell> path = new ArrayList<>();
+		if (from.equals(to))
+			return new ArrayList<>();
 
 		PriorityQueue<Node> open = new PriorityQueue<>();
 		Map<String, Node> closed = new HashMap<>();
 
-		Node first = new Node(0.0f, from, null);
-		setAdjacents(first);
+		float manhattan = BattleField.getInstance().calculateDistance(from, to);
+		Node first = new Node(manhattan, from);
+		first.costFromRoot = 0;
 		open.add(first);
 
-		Node current;
+		Node current = null;
 		while(open.size() > 0) {
 			current = open.poll();
+
+			if (current.cell.getX() == to.getX() && current.cell.getY() == to.getY())
+				break;
+
+			closed.put(buildKey(current), current);
+
+			setAdjacency(current);
+			for(Node n : current.adjacents) {
+				if (!closed.containsKey(buildKey(n))) {
+					if (current.costFromRoot + n.cell.getCost() < n.costFromRoot) {
+						n.parent = current;
+						n.costFromRoot = current.costFromRoot + n.cell.getCost();
+						open.add(n);
+					}
+				}
+			}
 		}
 
-//		int to = x + stepX;
-//		for (; x < to; x++) {
-//			if (x < ConfigurationManager.getInstance().getMapWidth() - 1) {
-//				path.add(BattleField.getInstance().getFieldCell(x, y));
-//			} else {
-//				x--;
-//				break;
-//			}
-//		}
-//		to = y + stepY;
-//		for (; y < to; y++)
-//			if (y < ConfigurationManager.getInstance().getMapHeight() - 1) {
-//				System.out.println(x);
-//				System.out.println(y);
-//				path.add(BattleField.getInstance().getFieldCell(x, y));
-//			}
+		ArrayList<FieldCell> path = new ArrayList<>();
+		buildPath(current, path);
+		Collections.reverse(path);
 
 		return path;
 	}
 
-	private void setAdjacents(Node node) {
-		int x = from.getX();
-		int y = from.getY();
+	private ArrayList<FieldCell> buildPath(Node current, ArrayList<FieldCell> path) {
+		// Check if finished or no path found
+		if (current == null)
+			return path;
 
-		node.setAdjacencies(
-				fetchNode(x - 1, y),
-				fetchNode(x + 1, y),
-				fetchNode(x, y + 1),
-				fetchNode(x, y -1),
-				fetchNode(x - 1, y + 1),
-				fetchNode(x + 1, y + 1),
-				fetchNode(x - 1, y -1),
-				fetchNode(x + 1, y -1)
-		);
+		path.add(current.cell);
+		return buildPath(current.parent, path);
 	}
 
-	private Node fetchNode(int x, int y) {
-		int width = ConfigurationManager.getInstance().getMapWidth();
-		int height = ConfigurationManager.getInstance().getMapHeight();
+	private void setAdjacency(Node node) {
+		if (node.adjacenciesSet)
+			return;
 
-		if (x >= 0 && x <= width && y >= 0 && y <= height) {
-			FieldCell cell = BattleField.getInstance().getFieldCell(x, y);
+		List<FieldCell> adjacents = BattleField.getInstance().getAdjacentCells(node.cell);
+		List<Node> adjacentNodes = new ArrayList<>();
 
+		for(FieldCell cell : adjacents) {
 			if (cell.getFieldCellType() == FieldCellType.NORMAL)
-				return new Node(0.0f, cell, null);
+				adjacentNodes.add(new Node(BattleField.getInstance().calculateDistance(cell, to), cell));
 		}
 
-		return null;
+		node.setAdjacency(adjacentNodes);
+		node.adjacenciesSet = true;
+	}
+
+	private String buildKey(Node node) {
+		return String.format("%d:%d", node.cell.getX(), node.cell.getY());
 	}
 }
