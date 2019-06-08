@@ -1,9 +1,6 @@
 import java.util.*;
 
-import ia.battle.core.BattleField;
-import ia.battle.core.ConfigurationManager;
-import ia.battle.core.FieldCell;
-import ia.battle.core.FieldCellType;
+import ia.battle.core.*;
 import ia.battle.core.actions.Move;
 
 public class AStar extends Move {
@@ -19,7 +16,7 @@ public class AStar extends Move {
 	@Override
 	public ArrayList<FieldCell> move() {
 		if (from.equals(to))
-			return new ArrayList<>();
+			return new ArrayList<>(Collections.singletonList(BattleField.getInstance().getAdjacentCells(from).get(0)));
 
 		PriorityQueue<Node> open = new PriorityQueue<>();
 		Map<String, Node> closed = new HashMap<>();

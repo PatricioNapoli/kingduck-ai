@@ -1,6 +1,5 @@
-import ia.battle.core.FieldCell;
-
 import java.util.List;
+import ia.battle.core.*;
 
 public class Node implements Comparable<Node> {
     public boolean adjacenciesSet;
