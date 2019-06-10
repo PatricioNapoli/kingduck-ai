@@ -41,6 +41,9 @@ public class AStar extends Move {
 
 			setAdjacency(current);
 			for(Node n : current.adjacents) {
+				if (closed.containsKey(buildKey(n)))
+					continue;
+
 				if (!contains(open, n)) {
 					n.parent = current;
 					n.costFromRoot = current.costFromRoot + n.cell.getCost() + n.negativeBias;

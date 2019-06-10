@@ -15,9 +15,7 @@ public class Duci extends Warrior {
     private BattleField battleField;
 
     private int spCount;
-    private int spLimit = 3;
-
-    private boolean suicide;
+    private int spLimit = 5;
 
     private boolean itemsDepleted;
 
@@ -41,44 +39,46 @@ public class Duci extends Warrior {
      */
 	@Override
 	public Action playTurn(long tick, int actionNumber) {
-		if (suicide)
-			return new Suicide();
+		try {
+			WarriorData wd = battleField.getEnemyData();
+
+			// Attack close enemy
+			if (wd.getInRange())
+				return new Attack(wd.getFieldCell());
+
+			// After farming and not in range or items depleted, find enemy
+			if ((spCount >= spLimit && !wd.getInRange()) || itemsDepleted)
+				return new AStar(this.getPosition(), approachEnemy());
+
+			ArrayList<FieldCell> si = battleField.getSpecialItems();
+			ArrayList<FieldCell> items = new ArrayList<>();
+
+			// Check if field cell contains stealth ability, ignore those
+			for(FieldCell i : si) {
+				if (!isStealth(i))
+					items.add(i);
+			}
+
+			// Prioritize closest loot
+			if (items.size() > 0) {
+				FieldCell[] arr = items.toArray(new FieldCell[0]);
+				Arrays.sort(arr, new CellDistanceComparator());
+
+				spCount++;
+
+				return new AStar(this.getPosition(), arr[0]);
+			}
+
+			return new AStar(this.getPosition(), approachFarItem());
+		} catch (Exception e) { }
 
 		WarriorData wd = battleField.getEnemyData();
-
-		if (wd.getInRange() && this.getHealth() <= 10) {
-			suicide = true;
-			return new AStar(this.getPosition(), approachEnemy());
-		}
 
 		// Attack close enemy
 		if (wd.getInRange())
 			return new Attack(wd.getFieldCell());
 
-		// After farming and not in range or items depleted, find enemy
-		if ((spCount >= spLimit && !wd.getInRange()) || itemsDepleted && !wd.getInRange())
-		    return new AStar(this.getPosition(), approachEnemy());
-
-		ArrayList<FieldCell> si = battleField.getSpecialItems();
-        ArrayList<FieldCell> items = new ArrayList<>();
-
-        // Check if field cell contains stealth ability, ignore those
-        for(FieldCell i : si) {
-            if (!isStealth(i))
-            	items.add(i);
-        }
-
-        // Prioritize closest loot
-		if (items.size() > 0) {
-			FieldCell[] arr = items.toArray(new FieldCell[0]);
-			Arrays.sort(arr, new CellDistanceComparator());
-
-			spCount++;
-
-            return new AStar(this.getPosition(), arr[0]);
-		}
-
-        return new AStar(this.getPosition(), approachFarItem());
+		return new AStar(this.getPosition(), approachEnemy());
 	}
 
 	private boolean isStealth(FieldCell i) {
