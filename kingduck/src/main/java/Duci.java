@@ -15,7 +15,7 @@ public class Duci extends Warrior {
     private BattleField battleField;
 
     private int spCount;
-    private int spLimit = 5;
+    private int spLimit = 3;
 
     private boolean suicide;
 
