@@ -7,6 +7,8 @@ public class Node implements Comparable<Node> {
     public float costFromRoot = Float.MAX_VALUE;
     public float manhattan;
 
+    public float negativeBias;
+
     public FieldCell cell;
 
     public Node parent;

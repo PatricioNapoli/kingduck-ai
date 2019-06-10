@@ -32,7 +32,6 @@ public class Duci extends Warrior {
      * When enemy is killed, go into a frenzy, and reduce farm limit, in order
      * to prevent enemy warriors to farm.
      *
-     * Ignores hunter, hunter has very low range and speed.
      * Ignores building walls, because you can attack over them anyways and implementing
      * a wall block strategy is... complicated.
      *
@@ -52,8 +51,8 @@ public class Duci extends Warrior {
 			return new AStar(this.getPosition(), approachEnemy());
 		}
 
-		// Attack close enemy only if farmed or no more items in map
-		if ((wd.getInRange() && spCount >= spLimit) || itemsDepleted && wd.getInRange())
+		// Attack close enemy
+		if (wd.getInRange())
 			return new Attack(wd.getFieldCell());
 
 		// After farming and not in range or items depleted, find enemy
@@ -131,7 +130,7 @@ public class Duci extends Warrior {
 		// Only go frenzy if farmed
 		if (spCount >= spLimit) {
 			spCount = 0;
-			spLimit = 2;
+			spLimit = 1;
 		}
 	}
 
