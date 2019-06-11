@@ -82,6 +82,21 @@ public class Duci extends Warrior {
 	}
 
 	private boolean isStealth(FieldCell i) {
+	    // COMENTARIO AGREGADO LUEGO DE TORNEO
+        //
+        // La intencion de este metodo es evitar que el warrior se quede trabado
+        // La idea era compensar el bug de battlefield-ia, porque no sabia que iba
+        // a ser arreglado a la hora del torneo.
+        // Luego de ser arreglado antes de agregar los jars, lo deje porque el resultado
+        // no hubiese cambiado. Si bien el bot usa una logica de spLimit, el limite se lo hubiese
+        // subido para compensar por aquellas habilidades que no eran stat increase.
+        // La intencion no es cheatear, sino que no se tenia el conocimiento de si el bug
+        // seria arreglado, por ende programe el bot asumiendo que el bug estaria ahi.
+        // Se puede remover el chequeo de isStealth() y subir el spLimit a 6, el resultado seria
+        // el mismo. No considere hacerlo porque fue muy de ultimo momento.
+        // Notese que este metodo no se usa para priorizar un stat o el otro, solo se usa para
+        // evitar que el warrior se trabe. En un futuro, si se implementasen las habilidades,
+        // la estrategia del bot cambiaria radicalmente.
 		try {
 			Method m = i.getClass().getDeclaredMethod("getItem");
 			m.setAccessible(true);
